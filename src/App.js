@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import marked from 'marked';
-import './App.css';
-import { render } from '@testing-library/react';
 
+// import { render } from '@testing-library/react';
 
+//default text sample
 const sample =
-  `# Welcome to my React Markdown Previewer!
+`# Welcome to my React Markdown Previewer!
 
 ## This is a sub-heading...
 ### And here's some other cool stuff:
@@ -52,26 +52,41 @@ And here. | Okay. | I think we get it.
 ![React Logo w/ Text](https://goo.gl/Umyytc)
 `
 
+//App component
 function App() {
+  //states
   const [content, setContent] = useState(sample);
+  const [ismaxE,setIsmaxE] = useState(false);
+  const [ismaxP,setIsmaxP] = useState(false);
+
+  //event handlers
   const handleChange = (e) => {
-    console.log(content)
+    console.log('content: ',content)
     return setContent(e.target.value)
   }
+  const handleClickE = () => {
+    console.log('Editor is max b4: ',ismaxE)
+    return setIsmaxE(!ismaxE)
+  }
+  const handleClickP = () => {
+    console.log('Previewer is max b4: ',ismaxE)
+    return setIsmaxP(!ismaxP)
+  }
+
+  //dynamic className
+  const dynamicClass = ismaxE?["wraperEditorMax","fa fa-compress","wraperPreview hide"]:ismaxP?["wraperEditor hide","fa fa-compress","wraperPreviewMax "]:["wraperEditor","fa fa-arrows-alt","wraperPreview "]
+  //`marked` configuration
   marked.setOptions({
     breaks: true,
   });
-  const handleClick = () => {
-
-  }
 
   return (
     <div className="App">
-      <div className="wraper">
+      <div className={dynamicClass[0]}>
         <ToolBar
           text="Editor"
-          onClick={handleClick}
-          iconClass={{ color: "red" }}
+          onClick={handleClickE}
+          iconClass={dynamicClass[1]}
         />
         <Editor
           value={content}
@@ -79,11 +94,11 @@ function App() {
 
         />
       </div>
-      <div className="wraper">
+      <div className={dynamicClass[2]}>
         <ToolBar
           text="Previewer"
-          onClick={handleClick}
-          iconClass={{ color: "pink" }}
+          onClick={handleClickP}
+          iconClass={dynamicClass[1]}
         />
         <Preview
           content={content}
@@ -93,6 +108,7 @@ function App() {
   );
 }
 
+//ToolBar component
 const ToolBar = (props) => {
   return (
     <div className="toolbar">
@@ -104,6 +120,7 @@ const ToolBar = (props) => {
   )
 }
 
+//Editor Component
 const Editor = (props) => {
   return (
     <textarea id="editor"
@@ -114,6 +131,7 @@ const Editor = (props) => {
   )
 }
 
+//Preview component
 const Preview = (props) => {
   return (
     <div id="preview" dangerouslySetInnerHTML={{ __html: marked(props.content) }}></div>
